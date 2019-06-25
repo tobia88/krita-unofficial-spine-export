@@ -34,6 +34,9 @@ class UnofficialSpineExport(Extension):
                 self.directory = os.path.dirname(document.fileName()) if document.fileName() else os.path.expanduser("~")
             self.directory = QFileDialog.getExistingDirectory(None, "Select a folder", self.directory, QFileDialog.ShowDirsOnly)
 
+            if not self.directory:
+                return
+
             self.json = {
                 "skeleton": {"images": self.directory},
                 "bones": [{"name": "root"}],
