@@ -1,5 +1,6 @@
 # Unofficial Spine Export
 
+Now Avaialble for Krita 4.2
 Experimental Krita 4 Python Plugin to export into the Spine JSON format
 
 ## How to install

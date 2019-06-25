@@ -4,7 +4,7 @@ import re
 
 from PyQt5.QtWidgets import (QFileDialog, QMessageBox)
 
-from krita import (Krita, Extension)
+from krita import * 
 
 
 class UnofficialSpineExport(Extension):
@@ -17,6 +17,7 @@ class UnofficialSpineExport(Extension):
         self.bonePattern = re.compile("\(bone\)|\[bone\]", re.IGNORECASE)
         self.mergePattern = re.compile("\(merge\)|\[merge\]", re.IGNORECASE)
         self.slotPattern = re.compile("\(slot\)|\[slot\]", re.IGNORECASE)
+        self.ignorePattern = re.compile("\(ignore\)|\[ignore\]", re.IGNORECASE)
 
     def setup(self):
         pass
@@ -32,10 +33,6 @@ class UnofficialSpineExport(Extension):
             if not self.directory:
                 self.directory = os.path.dirname(document.fileName()) if document.fileName() else os.path.expanduser("~")
             self.directory = QFileDialog.getExistingDirectory(None, "Select a folder", self.directory, QFileDialog.ShowDirsOnly)
-
-            if not self.directory:
-                self._alert('Abort!')
-                return
 
             self.json = {
                 "skeleton": {"images": self.directory},
@@ -71,7 +68,7 @@ class UnofficialSpineExport(Extension):
             if not child.visible():
                 continue
 
-            if '(ignore)' in child.name():
+            if self.ignorePattern.search(child.name()):
                 continue
 
             if child.childNodes():
@@ -107,7 +104,7 @@ class UnofficialSpineExport(Extension):
 
             name = self.mergePattern.sub('', child.name()).strip()
             layerFileName = '{0}/{1}.{2}'.format(directory, name, self.fileFormat)
-            child.save(layerFileName, 96, 96)
+            child.save(layerFileName, 96, 96, InfoObject())
 
             newSlot = slot
             if not newSlot:
